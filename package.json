@@ -7,6 +7,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "stremio-addon-sdk": "^1.14.0"
+    "stremio-addon-sdk": "^1.14.0",
+    "express": "^4.18.2"
   }
 }

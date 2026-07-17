@@ -1,10 +1,12 @@
 const { addonBuilder } = require("stremio-addon-sdk");
+const express = require("express");
 const fs = require("fs");
 const path = require("path");
 
-// 1. قراءة الـ 190 ملف JSON وجمعها في قاعدة بيانات واحدة
+// 1. قراءة كل ملفات JSON وجمعها في قاعدة بيانات واحدة
 const db = {};
-const files = fs.readdirSync(__dirname).filter(file => file.endsWith(".json") && file !== "package.json");
+// أضفنا استثناء لملف vercel.json عشان ما يقراه بالخطأ
+const files = fs.readdirSync(__dirname).filter(file => file.endsWith(".json") && file !== "package.json" && file !== "vercel.json");
 
 files.forEach(file => {
     const seriesName = file.replace(".json", "");
@@ -91,5 +93,9 @@ builder.defineStreamHandler(({ type, id }) => {
     return Promise.resolve({ streams: [] });
 });
 
-// التصدير لسيرفر Vercel
-module.exports = require("stremio-addon-sdk").getRouter(builder.getInterface());
+// 6. التصدير لسيرفر Vercel بطريقة رسمية
+const app = express();
+const addonInterface = builder.getInterface();
+app.use("/", require("stremio-addon-sdk").getRouter(addonInterface));
+
+module.exports = app;
